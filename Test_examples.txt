@@ -1,0 +1,43 @@
+1. Задание
+добавление индексов
+Для первого запроса:
+create index design_drawings_iso_code ON design_drawings (iso_number);
+create index ix_isometric_iso_code ON isometric (iso_code);
+
+Для второго запроса: Исправлен запрос (iso_code на iso_number). 
+create index ix_specfication_draw_id ON specfication (draw_id);
+
+2. Задание
+# Таблица авторов
+CREATE TABLE author (
+auth_id int NOT NULL AUTO_INCREMENT,
+auth_name nvarchar(255),
+PRIMARY KEY (auth_id)
+)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+# Таблица книг
+CREATE TABLE Book (
+ book_id int NOT NULL AUTO_INCREMENT,
+ title nvarchar(255),
+ author_id int, 
+ pub_date year,
+ page_cnt int,
+ PRIMARY KEY (book_id),
+ FOREIGN KEY (author_id)
+        REFERENCES author(auth_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+
+select count(*) from book; 							--Общее кол-во книг в базе
+select distinct count(*) from author; 				--Кол-во уникальных авторов в базе
+select a.auth_name, count(b.book_id) from author a 	--Сколько имеет книг каждый автор.
+	join book b ON a.auth_id = b.author_id
+GROUP BY a.auth_name;
+
+3. Задание
+select pg.title,CASE WHEN pi.is_main_foto=1 THEN pi.id ELSE (SELECT id FROM photo_image limit 1) END AS MainPhoto
+FROM photo_gallery pg
+    JOIN photo_image pi ON pg.id=pi.g_id
+WHERE pg.c_id = 1 --любое значение
+GROUP BY pg.title
